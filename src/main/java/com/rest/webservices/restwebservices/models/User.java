@@ -1,10 +1,9 @@
 package com.rest.webservices.restwebservices.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
+@Entity
+@Table(name = "users")
 public class User {
 
     @Id
