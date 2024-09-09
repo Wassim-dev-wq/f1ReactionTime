@@ -74,14 +74,6 @@ public class UserDTO implements UserDetails {
         this.email = email;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Boolean getRole() {
-        return role;
-    }
-
     public void setRole(Boolean role) {
         this.role = role;
     }

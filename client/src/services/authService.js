@@ -7,6 +7,7 @@ const API_URL = process.env.REACT_APP_API_URL
 
 const authService = {
     login: async (email, password) => {
+
         const response = await axios.post(`${API_URL}/auth/login`, {
             email,
             password
@@ -22,6 +23,7 @@ const authService = {
             throw error;
         }
     },
+
     isAuthenticated: () => {
         const token = localStorage.getItem('token');
         if(!token) return false;

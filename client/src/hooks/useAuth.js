@@ -4,14 +4,15 @@ import { useNavigate } from 'react-router-dom';
 
 
 const useAuth = () => {
-    const [isAuthenticated, setIsAthenticated] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
         const checkAuth = () => {
             const auth = authService.isAuthenticated();
-            setIsAthenticated(auth);
+            setIsAuthenticated(auth);
             if(!auth){
+                console.log('useAutch, logingout the user.. :',{auth});
                 authService.logout();
                 navigate('/login');
             }
@@ -21,6 +22,7 @@ const useAuth = () => {
 
         return () => clearInterval(interval);
     }, [navigate]);
+    console.log('useAutch,  isAuthenticaed is ',{isAuthenticated});
 
     return isAuthenticated;
 }

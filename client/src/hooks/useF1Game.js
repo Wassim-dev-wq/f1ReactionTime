@@ -1,72 +1,84 @@
-import { useState, useCallback, useEffect } from 'react';
-import { submitReactionTime } from '../services/api';
+import { useState, useEffect, useCallback } from 'react';
+import { submitReactionTime } from '../services/gameService';
 
 const useF1Game = () => {
     const [gameState, setGameState] = useState('waiting');
-    const [startTime, setStartTime] = useState(0);
-    const [reactionTime, setReactionTime] = useState(0);
-    const [bestTime, setBestTime] = useState(localStorage.getItem('bestTime') || '00.000');
     const [litLights, setLitLights] = useState(0);
+    const [reactionTime, setReactionTime] = useState(0);
+    const [bestTime, setBestTime] = useState(() => {
+        const saved = localStorage.getItem('best');
+        return saved ? Number(saved) : Infinity;
+    });
+    const [lightsOutTime, setLightsOutTime] = useState(0);
+    const [error, setError] = useState(null);
 
-    const resetGame = useCallback(() => {
-        setGameState('waiting');
-        setReactionTime(0);
-        setLitLights(0);
-        setStartTime(0);
-    }, []);
+    const handleSubmitResult = async (time) => {
+        try {
+            const result = await submitReactionTime(time);
+            setError(null);
+            console.log('Reaction time submitted successfully:', result);
+        } catch (err) {
+            if (err.message === 'Unauthorized') {
+                setError('You need to be logged in to submit results.');
+            } else {
+                setError('Failed to submit result. Please try again.');
+            }
+        }
+    };
 
     const startGame = useCallback(() => {
-        if (gameState === 'waiting') {
+        if (gameState === 'waiting' || gameState === 'finished') {
             setGameState('countdown');
             setLitLights(0);
-            let currentLight = 0;
+            setReactionTime(0);
+            setLightsOutTime(0);
+            setError(null);
+
+            let lightsOn = 0;
+            const lightsStart = performance.now();
+
             const lightInterval = setInterval(() => {
-                if (currentLight < 5) {
-                    setLitLights(currentLight + 1);
-                    currentLight++;
-                } else {
+                lightsOn++;
+                setLitLights(lightsOn);
+                if (lightsOn === 5) {
                     clearInterval(lightInterval);
-                    setGameState('started');
-                    setStartTime(Date.now());
+                    const delay = Math.random() * 4000 + 1000;
+                    setTimeout(() => {
+                        setLitLights(0);
+                        setLightsOutTime(performance.now());
+                        setGameState('started');
+                    }, delay);
                 }
             }, 1000);
-        } else if (gameState === 'countdown') {
-            // Early click, reset the game
-            resetGame();
         } else if (gameState === 'started') {
-            const endTime = Date.now();
-            const time = (endTime - startTime) / 1000;
-            setReactionTime(time);
-            setGameState('finished');
-            if (time < parseFloat(bestTime)) {
-                setBestTime(time.toFixed(3));
-                localStorage.setItem('bestTime', time.toFixed(3));
+            const endTime = performance.now();
+            if (lightsOutTime === 0) {
+                setReactionTime('Jump start!');
+                handleSubmitResult(-1); // Use -1 to indicate a jump start
+            } else {
+                const time = Math.round(endTime - lightsOutTime);
+                setReactionTime(time);
+                handleSubmitResult(time);
+                if (time < bestTime) {
+                    setBestTime(time);
+                    localStorage.setItem('best', time);
+                }
             }
-            submitReactionTime(time)
-                .then(response => {
-                    console.log('Reaction time submitted successfully:', response);
-                })
-                .catch(error => {
-                    console.error('Failed to submit reaction time:', error);
-                });
-        } else if (gameState === 'finished') {
-            resetGame();
+            setGameState('finished');
         }
-    }, [gameState, startTime, bestTime, resetGame]);
+    }, [gameState, lightsOutTime, bestTime]);
 
     useEffect(() => {
-        const handleKeyPress = (event) => {
-            if (event.code === 'Space') {
+        const handleKeyDown = (event) => {
+            if (event.key === ' ') {
                 startGame();
             }
         };
-        window.addEventListener('keydown', handleKeyPress);
-        return () => {
-            window.removeEventListener('keydown', handleKeyPress);
-        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
     }, [startGame]);
 
-    return { gameState, reactionTime, bestTime, startGame, litLights };
+    return { gameState, reactionTime, bestTime, startGame, litLights, error };
 };
 
 export default useF1Game;

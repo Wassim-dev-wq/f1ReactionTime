@@ -10,7 +10,4 @@ public class UserAlreadyExistsException extends RuntimeException {
         super(message);
     }
 
-    public UserAlreadyExistsException(String message, Throwable cause) {
-        super(message, cause);
-    }
 }

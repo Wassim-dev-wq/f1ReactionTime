@@ -1,10 +1,103 @@
+html {
+    height: 100%;
+}
+
+body {
+    min-height: 100%;
+    font-family: sans-serif;
+    overflow-y: auto;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* The rest of your CSS remains unchanged */
 .f1-start-timer {
     display: flex;
     flex-direction: column;
     align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.game-area {
     width: 100%;
     max-width: 520px;
-    margin: 0 auto;
+    margin-bottom: 20px;
+}
+
+.reaction-times-section {
+    width: 100%;
+    max-width: 520px;
+}
+
+.toggle-reaction-times, .refresh-button {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.user-reaction-times {
+    margin-top: 20px;
+}
+
+.user-reaction-times h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.user-reaction-times table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.user-reaction-times th, .user-reaction-times td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.user-reaction-times th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.user-reaction-times tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.error-message {
+    color: red;
+    font-weight: bold;
+}
+
+.light {
+    border-radius: 100%;
+    background: #222;
+    margin: 10px;
+}
+
+.light::before {
+    content: '';
+    display: block;
+    padding-top: 100%;
+}
+
+.light-strip.on .light:nth-child(1n+3) {
+    background: red;
 }
 
 .f1-lights {
@@ -12,6 +105,21 @@
     position: relative;
     width: 100%;
     max-width: 520px;
+}
+
+.light-strip {
+    background: black;
+    border-radius: 11px;
+    margin: 0 2px;
+    position: relative;
+    flex: 1;
+}
+
+@media (min-width: 435px) {
+    .light-strip {
+        margin: 0 5px;
+        border-radius: 14px;
+    }
 }
 
 .back-board {
@@ -24,44 +132,16 @@
     transform: translateY(-50%);
 }
 
-.light-strip {
-    background: black;
-    border-radius: 11px;
-    margin: 0 2px;
-    position: relative;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.light {
-    border-radius: 100%;
-    background: #222;
-    margin: 10px;
-    width: 20px;
-    height: 20px;
-    transition: background 0.3s ease;
-}
-
-.light.top {
-    background: #400;
-}
-
-.light-strip.on .light.top {
-    background: #f00;
-}
-
 p {
     font-size: 18px;
     text-align: center;
     line-height: 1.4;
     margin: 1em;
+    margin-bottom: 0;
 }
 
 .time {
     font-size: 90px;
-    font-size: 12vw;
     line-height: 1;
     margin: 1rem;
     text-transform: uppercase;
@@ -85,9 +165,13 @@ p {
     }
 }
 
-@media (min-width: 435px) {
-    .light-strip {
-        margin: 0 5px;
-        border-radius: 14px;
-    }
+a:link {
+    text-decoration: none;
+}
+
+.error-message {
+    color: red;
+    font-size: 16px;
+    text-align: center;
+    margin-top: 10px;
 }
